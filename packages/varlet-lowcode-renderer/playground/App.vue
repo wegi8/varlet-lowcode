@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import Renderer from '../src/Renderer'
-import type { SchemaPageNode } from '@varlet/lowcode-core'
+import type { Assets, SchemaPageNode } from '@varlet/lowcode-core'
 import lowCode, { BuiltInEvents, BuiltInSchemaNodeBindingTypes, BuiltInSchemaNodeNames } from '@varlet/lowcode-core'
 import { shallowRef } from 'vue'
 import { v4 as uuid } from 'uuid'
 
 const schema = shallowRef<SchemaPageNode>()
+const assets = shallowRef<Assets>()
 
 lowCode.eventsManager.on(BuiltInEvents.SCHEMA_CHANGE, (newSchema) => {
   schema.value = newSchema
+})
+
+lowCode.eventsManager.on(BuiltInEvents.ASSETS_CHANGE, (newAssets) => {
+  assets.value = newAssets
 })
 
 const code = `
@@ -206,8 +211,14 @@ lowCode.schemaManager.importSchema({
     },
   },
 })
+
+lowCode.assetsManager.importAssets([
+  {
+    profile: 'VarletProfile',
+  },
+])
 </script>
 
 <template>
-  <Renderer :schema="schema" />
+  <Renderer :schema="schema" :assets="assets" />
 </template>
