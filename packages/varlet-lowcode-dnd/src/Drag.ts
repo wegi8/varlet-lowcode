@@ -1,5 +1,5 @@
-import { defineComponent, h, ref } from 'vue'
-import type { PropType, Ref } from 'vue'
+import { defineComponent, DirectiveBinding, h, ref } from 'vue'
+import type { PropType, Ref, Directive, Plugin, App } from 'vue'
 
 export type DargStatus = 'drag' | 'none'
 
@@ -78,3 +78,36 @@ export default defineComponent({
       )
   },
 })
+
+interface DragOptions{
+  dragStyle?: CSSStyleDeclaration
+  dragData?: unknown
+  dragImg?: HTMLImageElement | HTMLCanvasElement
+  disabled?: boolean
+  type?: DataTransfer["effectAllowed"]
+}
+
+
+
+function mounted(el: HTMLElement, props: DirectiveBinding<DragOptions>) {
+  // el.addEventListener('dragstart', removeRipple, { passive: true })
+  // document.addEventListener('touchend', el._ripple.removeRipple, { passive: true })
+  // document.addEventListener('touchcancel', el._ripple.removeRipple, { passive: true })
+}
+
+function unmounted(el: HTMLElement, props: DirectiveBinding<DragOptions>) {
+
+}
+
+const VarletLowCodeDrag: Directive & Plugin = {
+  mounted,
+  unmounted,
+  // updated,
+  install(app: App) {
+    app.directive('drag', this)
+  },
+}
+
+// export const _RippleComponent = Ripple
+
+// export default Ripple
