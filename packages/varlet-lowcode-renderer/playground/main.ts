@@ -3,7 +3,9 @@ import { v4 as uuid } from 'uuid'
 import lowCode, { BuiltInSchemaNodeBindingTypes, BuiltInSchemaNodeNames } from '@varlet/lowcode-core'
 import Renderer from '../src/Renderer'
 
-;(async () => {
+;
+
+(async () => {
   const assets = [
     {
       profile: 'VarletLowcodeProfile',
