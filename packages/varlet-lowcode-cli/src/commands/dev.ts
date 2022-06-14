@@ -1,11 +1,11 @@
 import logger from '../shared/logger'
 import chokidar, { FSWatcher } from 'chokidar'
 import { createServer, ViteDevServer } from 'vite'
-import { copy, pathExistsSync } from 'fs-extra'
+import { pathExistsSync } from 'fs-extra'
 import { getVarletLowCodeConfig } from '../config/varletLowcode.config'
 import { getDevConfig, getEntry } from '../config/vite.config'
 import { merge } from 'lodash'
-import { PLAYGROUND, PLAYGROUND_DIR, VARLET_LOW_CODE_CONFIG } from '../shared/constant'
+import { VARLET_LOW_CODE_CONFIG } from '../shared/constant'
 
 let server: ViteDevServer
 let watcher: FSWatcher
@@ -19,7 +19,6 @@ async function startServer(force: boolean | undefined) {
   watcher && (await watcher.close())
 
   // build all config
-  await copy(PLAYGROUND, PLAYGROUND_DIR)
   const varletLowCodeConfig = getVarletLowCodeConfig()
   const devConfig = getDevConfig(varletLowCodeConfig)
   const inlineConfig = merge(devConfig, force ? { server: { force: true } } : {})
@@ -38,6 +37,7 @@ async function startServer(force: boolean | undefined) {
 
 export async function dev(cmd: { force?: boolean }) {
   process.env.NODE_ENV = 'development'
+  process.env.COMMAND = 'dev'
 
   if (!getEntry()) {
     logger.warning('Plugin entry not found')

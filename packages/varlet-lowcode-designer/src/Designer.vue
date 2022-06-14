@@ -17,19 +17,19 @@ const schema = shallowRef()
 const assets = shallowRef()
 
 const container = ref<HTMLIFrameElement>()
-let iframeWindow
-let iframeElement: HTMLIFrameElement
+let renderer: any
+let iframeElement: HTMLIFrameElement | null
 
 lowCode.eventsManager.on(BuiltInEvents.SCHEMA_CHANGE, (newSchema) => {
   const oldSchema = schema.value
 
   schema.value = newSchema
 
-  if (iframeWindow) {
-    if (oldSchema && oldSchema.code !== schema.value.code) {
+  if (renderer) {
+    if (oldSchema?.code !== schema.value.code) {
       mountRenderer()
     } else {
-      iframeWindow.onSchemaChange?.(schema.value)
+      renderer.schema.value = schema.value
     }
   }
 })
@@ -37,7 +37,7 @@ lowCode.eventsManager.on(BuiltInEvents.SCHEMA_CHANGE, (newSchema) => {
 lowCode.eventsManager.on(BuiltInEvents.ASSETS_CHANGE, async (newAssets) => {
   assets.value = newAssets
 
-  if (iframeWindow) {
+  if (renderer) {
     await mountRenderer()
   }
 })
@@ -77,11 +77,11 @@ lowCode.schemaManager.importSchema({
 
 lowCode.assetsManager.importAssets([
   {
-    profile: 'VarletProfile',
+    profile: 'VarletLowcodeProfile',
     resources: [
       'https://cdn.jsdelivr.net/npm/@varlet/ui/umd/varlet.js',
       'https://cdn.jsdelivr.net/npm/@varlet/touch-emulator/iife.js',
-      './varlet-profile.js',
+      './varlet-lowcode-profile.iife.js',
     ],
   },
 ])
@@ -101,20 +101,18 @@ function mountIframe() {
 async function mountRenderer() {
   mountIframe()
 
-  iframeWindow = iframeElement.contentWindow as Record<string, any>
-
+  const iframeWindow = iframeElement!.contentWindow as Record<string, any>
   const mergedAssets = [...presetAssets, ...assets.value]
+  await lowCode.assetsManager.loadResources(mergedAssets, iframeElement!.contentDocument!)
 
-  await lowCode.assetsManager.loadResources(mergedAssets, iframeElement.contentDocument!)
+  renderer = iframeWindow.VarletLowcodeRenderer.default
 
-  const renderer = iframeWindow.VarletLowcodeRenderer.default
-  const app = iframeElement.contentDocument!.createElement('div')
+  const app = iframeElement!.contentDocument!.createElement('div')
   app.id = 'app'
-  iframeElement.contentDocument!.body.appendChild(app)
+  iframeElement!.contentDocument!.body.appendChild(app)
 
-  iframeWindow.onSchemaChange(schema.value)
-  iframeWindow.onAssetsChange(mergedAssets)
-
+  renderer.schema.value = schema.value
+  renderer.assets.value = mergedAssets
   renderer.init('#app')
 }
 

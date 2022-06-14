@@ -26,6 +26,7 @@
       "packages/varlet-lowcode-dnd/lib/**",
       "packages/varlet-lowcode-designer/lib/**",
       "packages/varlet-lowcode-renderer/lib/**",
+      "packages/varlet-lowcode-renderer/public/**",
       "packages/varlet-lowcode-designer/public/**",
       "packages/varlet-lowcode-cli/lib/**"
     ],
@@ -33,8 +34,9 @@
       "no-new-func": "off",
       "no-useless-escape": "off",
       "no-eval": "off",
-      "vue/no-setup-props-destructure": "off",
+      "no-continue": "off",
       "no-restricted-syntax": "off",
+      "vue/no-setup-props-destructure": "off",
       "@typescript-eslint/ban-types": "off"
     }
   },
