@@ -2,11 +2,11 @@ import { DirectiveBinding } from 'vue'
 import type { Directive, Plugin, App } from 'vue'
 import { mergeStyle } from './shared'
 
-interface DragOptions{
+interface DragOptions {
   dragStyle?: CSSStyleDeclaration
   dragData?: string | Record<string, any>
   dragImg?: HTMLImageElement | HTMLCanvasElement
-  type?: DataTransfer["effectAllowed"]
+  type?: DataTransfer['effectAllowed']
 }
 
 interface DragHTMLElement extends HTMLElement {
@@ -23,7 +23,7 @@ function onDragStart(this: DragHTMLElement, e: DragEvent) {
   e.dataTransfer!.effectAllowed = type
 }
 
-function onDragEnter(this: DragHTMLElement, e: DragEvent){
+function onDragEnter(this: DragHTMLElement, e: DragEvent) {
   e.stopPropagation()
 }
 
@@ -33,12 +33,13 @@ function onDragOver(this: DragHTMLElement, e: DragEvent) {
 
 function onDragEnd(this: DragHTMLElement, e: DragEvent) {
   e.preventDefault()
-  // dragStyle && resetStyle(this, dragStyle)
+  const _drag = this._drag as DragOptions
+  const { dragStyle } = _drag
+  dragStyle && mergeStyle(this, dragStyle)
 }
 
-
 function mounted(el: DragHTMLElement, props: DirectiveBinding<DragOptions>) {
-  el._drag = {...props.value}
+  el._drag = { ...props.value }
   el.addEventListener('dragstart', onDragStart, { passive: true })
   el.addEventListener('dragenter', onDragEnter, { passive: true })
   el.addEventListener('dragover', onDragOver, { passive: true })
